@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.dongeeo.bibliotecamunicipal.presentation.components.BookListItem
 import dev.dongeeo.bibliotecamunicipal.presentation.components.EmptyState
-import dev.dongeeo.bibliotecamunicipal.presentation.components.InitialState
 import dev.dongeeo.bibliotecamunicipal.presentation.components.LoadingIndicator
 import dev.dongeeo.bibliotecamunicipal.presentation.components.SearchBar
 import dev.dongeeo.bibliotecamunicipal.ui.theme.BibliotecaMunicipalTheme
@@ -64,9 +63,11 @@ fun SearchScreen(
     
     // Manejar errores con Snackbar
     LaunchedEffect(state) {
-        if (state is SearchState.Error) {
-            val errorState = state
-            snackbarHostState.showSnackbar(errorState.message)
+        when (val currentState = state) {
+            is SearchState.Error -> {
+                snackbarHostState.showSnackbar(currentState.message)
+            }
+            else -> { /* No action needed */ }
         }
     }
     
@@ -105,9 +106,13 @@ fun SearchScreen(
                 )
                 
                 // Contenido principal basado en el estado
-                when (state) {
+                when (val currentState = state) {
                     is SearchState.Idle -> {
-                        InitialState(
+                        EmptyState(
+                            title = "Bienvenido a la Biblioteca Municipal",
+                            message = "Busca tus libros favoritos por título o autor",
+                            buttonText = "Empezar a buscar",
+                            onButtonClick = { /* Focus en el campo de búsqueda */ },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -120,11 +125,10 @@ fun SearchScreen(
                     }
                     
                     is SearchState.Success -> {
-                        val successState = state
-                        if (successState.books.isEmpty()) {
+                        if (currentState.books.isEmpty()) {
                             EmptyState(
                                 title = "No se encontraron libros",
-                                message = "No hay libros que coincidan con '${successState.query}'",
+                                message = "No hay libros que coincidan con '${currentState.query}'",
                                 buttonText = "Limpiar búsqueda",
                                 onButtonClick = { viewModel.clearSearch() },
                                 modifier = Modifier.weight(1f)
@@ -139,7 +143,7 @@ fun SearchScreen(
                                 // Header con información de resultados
                                 item {
                                     Text(
-                                        text = "${successState.books.size} libro(s) encontrado(s)",
+                                        text = "${currentState.books.size} libro(s) encontrado(s)",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -147,7 +151,7 @@ fun SearchScreen(
                                 }
                                 
                                 // Lista de libros
-                                items(successState.books) { book ->
+                                items(currentState.books) { book ->
                                     BookListItem(
                                         book = book,
                                         onClick = {
@@ -160,10 +164,9 @@ fun SearchScreen(
                     }
                     
                     is SearchState.Error -> {
-                        val errorState = state
                         EmptyState(
                             title = "Error en la búsqueda",
-                            message = errorState.message,
+                            message = currentState.message,
                             buttonText = "Reintentar",
                             onButtonClick = { viewModel.refreshSearch() },
                             modifier = Modifier.weight(1f)
@@ -171,10 +174,9 @@ fun SearchScreen(
                     }
                     
                     is SearchState.Empty -> {
-                        val emptyState = state
                         EmptyState(
                             title = "No se encontraron libros",
-                            message = emptyState.message,
+                            message = currentState.message,
                             buttonText = "Limpiar búsqueda",
                             onButtonClick = { viewModel.clearSearch() },
                             modifier = Modifier.weight(1f)
