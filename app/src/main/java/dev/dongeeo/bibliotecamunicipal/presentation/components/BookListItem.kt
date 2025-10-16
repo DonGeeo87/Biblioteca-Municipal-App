@@ -23,11 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import dev.dongeeo.bibliotecamunicipal.domain.model.Book
 import dev.dongeeo.bibliotecamunicipal.ui.theme.BibliotecaMunicipalTheme
 
@@ -70,13 +72,19 @@ fun BookListItem(
         ) {
             // Imagen del libro
             AsyncImage(
-                model = book.imageUrl,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(
+                        book.imageUrl ?: "https://via.placeholder.com/80x120/cccccc/666666?text=Sin+Imagen"
+                    )
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "Portada de ${book.title}",
                 modifier = Modifier
                     .size(80.dp)
                     .fillMaxHeight(),
                 contentScale = ContentScale.Crop,
-                error = null
+                error = null,
+                placeholder = null
             )
             
             // Información del libro
@@ -98,6 +106,7 @@ fun BookListItem(
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface
                     )
+                    
                     
                     // Subtítulo si existe
                     if (!book.subtitle.isNullOrBlank()) {

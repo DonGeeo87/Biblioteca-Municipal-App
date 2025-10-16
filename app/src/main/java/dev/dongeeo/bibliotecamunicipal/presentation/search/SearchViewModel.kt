@@ -134,6 +134,7 @@ class SearchViewModel @Inject constructor(
                 val domainSearchType = searchType.toDomainSearchType()
                 val books = searchBooksUseCase(query, domainSearchType)
                 
+                
                 // Actualizar estado basado en resultados
                 _state.value = if (books.isEmpty()) {
                     SearchState.Empty(query)
