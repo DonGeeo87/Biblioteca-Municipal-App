@@ -53,6 +53,7 @@ object ImageModule {
             )
             .respectCacheHeaders(false) // Ignorar headers de caché del servidor
             .crossfade(true) // Animación suave al cargar imágenes
+            .allowHardware(false) // Deshabilitar hardware para mejor compatibilidad
             .build()
     }
 }

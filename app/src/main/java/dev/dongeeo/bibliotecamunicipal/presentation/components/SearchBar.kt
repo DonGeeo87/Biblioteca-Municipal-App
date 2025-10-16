@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,9 @@ fun SearchBar(
     onSearchTypeChange: (SearchType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // FocusManager para ocultar el teclado
+    val focusManager = LocalFocusManager.current
+    
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -79,8 +83,8 @@ fun SearchBar(
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        // La búsqueda se maneja automáticamente con debounce
-                        // No es necesario hacer nada aquí
+                        // Ocultar el teclado al buscar
+                        focusManager.clearFocus()
                     }
                 )
             )

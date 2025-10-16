@@ -110,6 +110,22 @@ class BookRepositoryImpl @Inject constructor(
      * - Operación síncrona de transformación de datos
      */
     private fun BookItemDto.toDomainModel(): Book {
+        // DEBUG: Log para ver las URLs que estamos recibiendo
+        android.util.Log.d("BookRepository", "Book: ${this.volumeInfo.title}")
+        android.util.Log.d("BookRepository", "  Thumbnail: ${this.volumeInfo.imageLinks?.thumbnail}")
+        android.util.Log.d("BookRepository", "  Small Thumbnail: ${this.volumeInfo.imageLinks?.smallThumbnail}")
+        
+        // Normalizar URLs a HTTPS para evitar tráfico en texto claro bloqueado por Android
+        fun normalizeUrl(url: String?): String? {
+            if (url.isNullOrBlank()) return url
+            return if (url.startsWith("http://")) url.replaceFirst("http://", "https://") else url
+        }
+
+        val normalizedThumbnail = normalizeUrl(this.volumeInfo.imageLinks?.thumbnail)
+        val normalizedSmallThumbnail = normalizeUrl(this.volumeInfo.imageLinks?.smallThumbnail)
+        val normalizedPreviewLink = normalizeUrl(this.volumeInfo.previewLink)
+        val normalizedInfoLink = normalizeUrl(this.volumeInfo.infoLink)
+
         return Book(
             id = this.id,
             title = this.volumeInfo.title,
@@ -121,10 +137,10 @@ class BookRepositoryImpl @Inject constructor(
             pageCount = this.volumeInfo.pageCount,
             categories = this.volumeInfo.categories ?: emptyList(),
             language = this.volumeInfo.language,
-            thumbnailUrl = this.volumeInfo.imageLinks?.thumbnail,
-            smallThumbnailUrl = this.volumeInfo.imageLinks?.smallThumbnail,
-            previewLink = this.volumeInfo.previewLink,
-            infoLink = this.volumeInfo.infoLink,
+            thumbnailUrl = normalizedThumbnail,
+            smallThumbnailUrl = normalizedSmallThumbnail,
+            previewLink = normalizedPreviewLink,
+            infoLink = normalizedInfoLink,
             isAvailable = determineAvailability(this.saleInfo),
             availabilityStatus = getAvailabilityStatus(this.saleInfo)
         )

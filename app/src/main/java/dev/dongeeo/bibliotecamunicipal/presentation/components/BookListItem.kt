@@ -1,6 +1,8 @@
 package dev.dongeeo.bibliotecamunicipal.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,22 +74,59 @@ fun BookListItem(
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Imagen del libro
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(
-                        book.imageUrl ?: "https://via.placeholder.com/80x120/cccccc/666666?text=Sin+Imagen"
-                    )
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Portada de ${book.title}",
+            // Imagen del libro con fallbacks
+            Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .fillMaxHeight(),
-                contentScale = ContentScale.Crop,
-                error = null,
-                placeholder = null
-            )
+                    .size(100.dp) // Aumentado de 80dp a 100dp para mejor visibilidad
+                    .fillMaxHeight()
+            ) {
+                // DEBUG: Log para ver qué URL estamos recibiendo
+                android.util.Log.d("BookListItem", "Book: ${book.title}")
+                android.util.Log.d("BookListItem", "  Image URL: ${book.imageUrl}")
+                android.util.Log.d("BookListItem", "  Thumbnail URL: ${book.thumbnailUrl}")
+                android.util.Log.d("BookListItem", "  Small Thumbnail URL: ${book.smallThumbnailUrl}")
+                
+                // Si no hay URL, mostrar placeholder directamente
+                if (book.imageUrl.isNullOrBlank()) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp) // Actualizado para coincidir con el tamaño principal
+                            .fillMaxHeight()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(8.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Sin imagen",
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(book.imageUrl)
+                            .crossfade(true)
+                            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                            .addHeader("Referer", "https://books.google.com/")
+                            .build(),
+                        contentDescription = "Portada de ${book.title}",
+                        modifier = Modifier
+                            .size(100.dp) // Actualizado para coincidir con el tamaño principal
+                            .fillMaxHeight(),
+                        contentScale = ContentScale.Crop,
+                        onError = { result ->
+                            android.util.Log.e("BookListItem", "Error loading image for ${book.title}")
+                        },
+                        onSuccess = { result ->
+                            android.util.Log.d("BookListItem", "Successfully loaded image for ${book.title}")
+                        }
+                    )
+                }
+            }
             
             // Información del libro
             Column(
