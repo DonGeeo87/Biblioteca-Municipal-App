@@ -77,8 +77,8 @@ fun BookListItem(
             // Imagen del libro con fallbacks
             Box(
                 modifier = Modifier
-                    .size(100.dp) // Aumentado de 80dp a 100dp para mejor visibilidad
-                    .fillMaxHeight()
+                    .width(70.dp) // Ancho fijo para proporción de libro
+                    .height(100.dp) // Altura mayor para proporción rectangular
             ) {
                 // DEBUG: Log para ver qué URL estamos recibiendo
                 android.util.Log.d("BookListItem", "Book: ${book.title}")
@@ -90,8 +90,8 @@ fun BookListItem(
                 if (book.imageUrl.isNullOrBlank()) {
                     Box(
                         modifier = Modifier
-                            .size(100.dp) // Actualizado para coincidir con el tamaño principal
-                            .fillMaxHeight()
+                            .width(70.dp)
+                            .height(100.dp)
                             .background(
                                 MaterialTheme.colorScheme.surfaceVariant,
                                 RoundedCornerShape(8.dp)
@@ -115,9 +115,9 @@ fun BookListItem(
                             .build(),
                         contentDescription = "Portada de ${book.title}",
                         modifier = Modifier
-                            .size(100.dp) // Actualizado para coincidir con el tamaño principal
-                            .fillMaxHeight(),
-                        contentScale = ContentScale.Crop,
+                            .width(70.dp)
+                            .height(100.dp),
+                        contentScale = ContentScale.Fit, // Cambiar a Fit para mantener proporción
                         onError = { result ->
                             android.util.Log.e("BookListItem", "Error loading image for ${book.title}")
                         },
