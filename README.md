@@ -148,19 +148,19 @@ GitHub: [@DonGeeo87](https://github.com/DonGeeo87)
 
 ## 📋 Changelog
 
-### v1.1.1 (2025-01-16)
+### v1.1.1 (2025-10-16)
 - ✅ Portadas con proporción rectangular (70dp × 100dp)
 - ✅ ContentScale.Fit para mantener proporción original
 - ✅ Mejor representación visual de libros
 
-### v1.1.0 (2025-01-16)
+### v1.1.0 (2025-10-16)
 - ✅ Imágenes de Google Books funcionando
 - ✅ URLs normalizadas a HTTPS
 - ✅ LoadingIndicator mejorado
 - ✅ Teclado automático al buscar
 - ✅ UX optimizada
 
-### v1.0.0 (2025-01-16)
+### v1.0.0 (2025-10-16)
 - 🎉 Release inicial
 - ✅ Búsqueda básica de libros
 - ✅ Arquitectura Clean + MVVM
